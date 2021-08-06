@@ -17,3 +17,8 @@ es decir, lo que exportará será todos los departamentos que se encuentren por 
 
 _abrir_tabla() abre la tabla hecha en el programa por defecto del sistema operativo para abrir archivos xlxs_
 
+
+### Funcionalidad a agregar
+
+_[ ]Poder actualizar una tabla a partir de otra_
+_[ ]Que se permita definir si se quiere ordenar la tabla de menor a mayor respecto de los valores_

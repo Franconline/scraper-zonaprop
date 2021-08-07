@@ -18,7 +18,7 @@ class Scraper:
         anio_actual = dt.datetime.now().strftime("%Y")
         hora_actual = dt.datetime.now().strftime("%H") + dt.datetime.now().strftime("%M") + dt.datetime.now().strftime("%S")
         actual_time = f"{dia_actual}-{mes_actual}-{anio_actual}-{hora_actual}"
-        self.table_name = actual_time
+        self.table_name = f"tabla-{actual_time}.xlsx"
 
     def scrapear(self):
         """ El método scrapear() no requiere argumentos. Recolecta todos los datos de la página especificada en el constructor"""
@@ -65,17 +65,23 @@ class Scraper:
 
         return data
 
-    def procesar_datos(self, valor_maximo = 0):
+    def procesar_datos(self, valor_maximo = 0, orden_tabla = False):
         """ procesar_datos() usa los datos recolectados en el método scrapear() y los convierte a excel de manera ordenada y con un precio menor al requerido
         Si ningun precio es especificado, toma todos los datos que encuentre"""
         df = pd.DataFrame(self.data, columns=[key for key in self.data])
         # Deberia checkear si lo que quiero es insertar en una tabla
         # Por ahi puedo hacer otro método que sea insertar_datos y que reciba como argumento el nombre de la tabla, y que el nombre de la tabla
         # sea un atributo del objeto, y tmb al llamar al objeto devuelta eso, el metodo __str__
-        if(valor_maximo != 0):
+        if valor_maximo != 0:
             df = df[df.Precios < 18000]
-        df.to_excel(f"tabla-{self.table_name}.xlsx", index=False)
+        if orden_tabla:
+            df.sort_values(by=["Precios"], inplace=True)
+        df.to_excel(self.table_name, index=False)
         print(f"Tabla hecha, nombre en directorio: {self.table_name}")
         
     def abrir_tabla(self):
-        os.startfile(f"tabla-{self.table_name}.xlsx")
+        os.startfile(self.table_name)
+
+    
+    def actualizar_tabla(self, nombre_tabla):
+        pass

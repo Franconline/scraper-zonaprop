@@ -65,17 +65,29 @@ class Scraper:
 
         return data
 
+    def __crear_dataframe(self):
+        df = pd.DataFrame(self.data, columns=[key for key in self.data])
+        return df
+    
+    def __valor_maximo_tabla(self, valor_maximo, df):
+        df = df[df.Precios <= valor_maximo]
+        return df
+    
+    def __ordenar_por_precios(self, df):
+        df.sort_values(by=["Precios"], inplace = True)
+        return df
+
     def procesar_datos(self, valor_maximo = 0, orden_tabla = False):
         """ procesar_datos() usa los datos recolectados en el método scrapear() y los convierte a excel de manera ordenada y con un precio menor al requerido
         Si ningun precio es especificado, toma todos los datos que encuentre"""
-        df = pd.DataFrame(self.data, columns=[key for key in self.data])
+        df = self.__crear_dataframe()
         # Deberia checkear si lo que quiero es insertar en una tabla
         # Por ahi puedo hacer otro método que sea insertar_datos y que reciba como argumento el nombre de la tabla, y que el nombre de la tabla
         # sea un atributo del objeto, y tmb al llamar al objeto devuelta eso, el metodo __str__
         if valor_maximo != 0:
-            df = df[df.Precios < 18000]
+            df = self.__valor_maximo_tabla(valor_maximo, df)
         if orden_tabla:
-            df.sort_values(by=["Precios"], inplace=True)
+            df = self.__ordenar_por_precios(df)
         df.to_excel(self.table_name, index=False)
         print(f"Tabla hecha, nombre en directorio: {self.table_name}")
         
@@ -83,5 +95,21 @@ class Scraper:
         os.startfile(self.table_name)
 
     
-    def actualizar_tabla(self, nombre_tabla):
-        pass
+    def actualizar_tabla(self, nombre_tabla_base):
+        """ Recibe como argumento el nombre de la tabla actualizar. Si la tabla existe y tengo datos procesados, mergea los datos."""
+        # Primero debo crear el dataframe de la tabla actual, y luego lo concateno con el existente
+        # Debere leer el excel del dataframe base, para tenerlo en memoria y manipularlo
+        if os.path.isfile(nombre_tabla_base):
+            # MERGE.
+            # Leer dataframe de la tabla original
+            df_base = pd.read_excel(nombre_tabla_base)
+            # Crear dataframe de tabla actual
+            nueva_df = self.__crear_dataframe()
+            nueva_df = self.__valor_maximo_tabla(18000, nueva_df)
+            # Concatenar
+            tabla_concatenada = pd.concat([df_base, nueva_df])
+            tabla_concatenada = self.__ordenar_por_precios(tabla_concatenada)
+            tabla_concatenada.to_excel("tabla_concatenada.xlsx", index=False)
+            print("Tabla concatenada")
+        else:
+            print("Tabla no encontrada")

@@ -1,7 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from fake_useragent import UserAgent
 import time
 import pandas as pd
 import datetime as dt
@@ -24,6 +23,7 @@ class Scraper:
         """ El método scrapear() no requiere argumentos. Recolecta todos los datos de la página especificada en el constructor"""
         driver = self.__iniciar_opciones()
         driver.get(self.url)
+        driver.maximize_window() # se maximiza la ventana pq hay veces que el boton no aparece x tener la ventana no maximizada
         time.sleep(3)
         self.__cerrar_boton(driver)
         self.data = self.__recolectar_datos(driver)
@@ -31,10 +31,9 @@ class Scraper:
 
     def __iniciar_opciones(self):
         options = Options()
-        ua = UserAgent()
-        userAgent = ua.random
+        userAgent = "Mozilla/5.0 (Windows NT 4.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36"
         options.add_argument(f'--user-agent={userAgent}')
-        driver = webdriver.Chrome(options=options)
+        driver = webdriver.Chrome()
         return driver
     
 
@@ -42,7 +41,7 @@ class Scraper:
         try:
           driver.find_element_by_class_name("mdl-close-btn").click() # para cerrar un cartel de error que sale
         except:
-            pass
+            print("No pude cerrar boton")
 
 
     def __recolectar_datos(self, driver):
@@ -81,9 +80,6 @@ class Scraper:
         """ procesar_datos() usa los datos recolectados en el método scrapear() y los convierte a excel de manera ordenada y con un precio menor al requerido
         Si ningun precio es especificado, toma todos los datos que encuentre"""
         df = self.__crear_dataframe()
-        # Deberia checkear si lo que quiero es insertar en una tabla
-        # Por ahi puedo hacer otro método que sea insertar_datos y que reciba como argumento el nombre de la tabla, y que el nombre de la tabla
-        # sea un atributo del objeto, y tmb al llamar al objeto devuelta eso, el metodo __str__
         if valor_maximo != 0:
             df = self.__valor_maximo_tabla(valor_maximo, df)
         if orden_tabla:
@@ -95,17 +91,17 @@ class Scraper:
         os.startfile(self.table_name)
 
     
-    def actualizar_tabla(self, nombre_tabla_base):
+    def actualizar_tabla(self, nombre_tabla_base, valor_maximo = 0):
         """ Recibe como argumento el nombre de la tabla actualizar. Si la tabla existe y tengo datos procesados, mergea los datos."""
         # Primero debo crear el dataframe de la tabla actual, y luego lo concateno con el existente
         # Debere leer el excel del dataframe base, para tenerlo en memoria y manipularlo
         if os.path.isfile(nombre_tabla_base):
-            # MERGE.
             # Leer dataframe de la tabla original
             df_base = pd.read_excel(nombre_tabla_base)
             # Crear dataframe de tabla actual
             nueva_df = self.__crear_dataframe()
-            nueva_df = self.__valor_maximo_tabla(18000, nueva_df)
+            if valor_maximo != 0:
+                nueva_df = self.__valor_maximo_tabla(valor_maximo, nueva_df)
             # Concatenar
             tabla_concatenada = pd.concat([df_base, nueva_df])
             tabla_concatenada = self.__ordenar_por_precios(tabla_concatenada)

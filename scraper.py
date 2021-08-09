@@ -32,7 +32,7 @@ class Scraper:
     def __iniciar_opciones(self):
         options = Options()
         userAgent = "Mozilla/5.0 (Windows NT 4.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36"
-        options.add_argument(f'--user-agent={userAgent}')
+        options.add_argument(f'--user-agent={userAgent}')   
         driver = webdriver.Chrome()
         return driver
     

@@ -18,12 +18,12 @@ _Luego de recolectar lo necesario el programa se cierra y los datos ya están pr
 
 ### Modulos
 
-_scrapear() recolecta los datos de la página especificada y los guarda como atributo del objeto_
+_**scrapear()** recolecta los datos de la página especificada y los guarda como atributo del objeto_
 
-_procesar_datos() crea un archivo excel con los datos procesados. Se le puede especificar un valor máximo de alquiler de los departamentos requeridos, 
+_**procesar_datos()** crea un archivo excel con los datos procesados. Se le puede especificar un valor máximo de alquiler de los departamentos requeridos, 
 es decir, lo que exportará será todos los departamentos que se encuentren por debajo de ese valor_
 
-_abrir_tabla() abre la tabla hecha en el programa por defecto del sistema operativo para abrir archivos xlxs_
+_**abrir_tabla()** abre la tabla hecha en el programa por defecto del sistema operativo para abrir archivos xlxs_
 
 
 ### Funcionalidad a agregar
